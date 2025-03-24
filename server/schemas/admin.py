@@ -1,6 +1,11 @@
 from pydantic import BaseModel
 
 class AdminLoginSchema(BaseModel):
-    username: str
+    name: str
+    surname: str
     email: str
     password: str
+
+class CreateTestShema(BaseModel):
+    questions: str
+    duration: str
