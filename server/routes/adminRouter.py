@@ -1,11 +1,7 @@
-import jwt
-import os
-from datetime import datetime, timedelta, timezone
-
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from schemas.admin import AdminLoginSchema, CreateTestShema
 from db.db_models import Admin
-from utils.jwt import create_acces_token
+from utils.jwt import create_acces_token, get_current_user, security
 from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
@@ -28,7 +24,9 @@ async def login(cred: AdminLoginSchema):
 
     raise HTTPException(status_code=401, detail="Invalid Data")
 
-
 @router.post("/create")
-def create_test(test: CreateTestShema):
-    ...
+async def create_test(test: CreateTestShema, current_user: dict = Depends(get_current_user)):
+    return {
+        "message": "Test created successfully",
+        "user_id": current_user["id"],
+    }
