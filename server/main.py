@@ -1,9 +1,14 @@
 import uvicorn
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
+
+from tortoise import Tortoise
+
 from routes.adminRouter import router as admin_router
 from db.database import init_db
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
 app.include_router(admin_router, prefix="/admin")
@@ -19,8 +24,5 @@ app.add_middleware(
 load_dotenv("./.env")
 init_db(app)
 
-#For production
-# if __name__ == "__main__":
-#     load_dotenv("./.env")
-#     init_db(app)
-#     uvicorn.run("main:app")
+if __name__ == "__main__":
+    uvicorn.run("main:app")
