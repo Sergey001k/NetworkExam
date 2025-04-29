@@ -6,7 +6,6 @@ class Admin(Model):
     id = fields.IntField(primary_key=True)
     email = fields.CharField(max_length=256, unique=True)
     name = fields.CharField(max_length=256)
-    surname = fields.CharField(max_length=256)
     password = fields.CharField(max_length=256)
 
     class Meta:
@@ -28,9 +27,9 @@ class Session(Model):
     date_started = fields.DatetimeField()
     duration = fields.TimeDeltaField()
     test_duration = fields.TimeDeltaField()
-    questions = fields.JSONField()
+    questions_types = fields.JSONField()
     max_score = fields.IntField()
-    finished = fields.BooleanField()
+    finished = fields.BooleanField(default=False)
 
     class Meta:
         table = "sessions"
@@ -39,6 +38,7 @@ class Session(Model):
 class Question(Model):
     id = fields.IntField(primary_key=True)
     session_id = fields.ForeignKeyField("models.Session")
+    student_id = fields.ForeignKeyField("models.Student")
     type = fields.CharField(max_length=256)
     question = fields.JSONField()
 
