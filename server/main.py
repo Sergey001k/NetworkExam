@@ -1,17 +1,18 @@
 import uvicorn
 from fastapi import FastAPI
-from contextlib import asynccontextmanager
-
-from tortoise import Tortoise
 
 from routes.adminRouter import router as admin_router
+from routes.studentRouter import router as student_router
 from db.database import init_db
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 
+load_dotenv("./.env")
 
 app = FastAPI()
 app.include_router(admin_router, prefix="/admin")
+app.include_router(student_router, prefix="/student")
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,7 +22,6 @@ app.add_middleware(
     allow_headers=["*"], 
 )
 
-load_dotenv("./.env")
 init_db(app)
 
 if __name__ == "__main__":
