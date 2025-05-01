@@ -5,12 +5,23 @@ from fastapi import APIRouter, HTTPException, Depends
 from argon2 import PasswordHasher
 import datetime
 
-from schemas.admin import AdminLoginSchema, CreateSessionSchema
+from schemas.admin import AdminLoginSchema, CreateSessionSchema, AdminRegisterSchema
 from db.db_models import Admin, Session, Result
-from utils.jwt import create_access_token, get_current_user
+from utils.jwt import create_access_token, get_current_user, admin_creation_allowed
 
 router = APIRouter()
 ph = PasswordHasher()
+
+
+@router.post("/register", status_code=201)
+async def register_admin(
+        cred: AdminRegisterSchema,
+        current_user: dict = Depends(admin_creation_allowed)):
+    await Admin.create(name=cred.name, email=cred.email, password=ph.hash(cred.password))
+
+    return {
+        "status": "success"
+    }
 
 
 @router.post("/login")
