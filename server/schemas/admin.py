@@ -2,6 +2,12 @@ from pydantic import BaseModel
 from datetime import timedelta
 
 
+class AdminRegisterSchema(BaseModel):
+    name: str
+    email: str
+    password: str
+
+
 class AdminLoginSchema(BaseModel):
     name: str
     email: str
