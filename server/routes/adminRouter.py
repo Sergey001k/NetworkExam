@@ -17,6 +17,10 @@ ph = PasswordHasher()
 async def register_admin(
         cred: AdminRegisterSchema,
         current_user: dict = Depends(admin_creation_allowed)):
+
+    if len(cred.password) < 8:
+        raise HTTPException(status_code=400, detail="Password is too short")
+
     await Admin.create(name=cred.name, email=cred.email, password=ph.hash(cred.password))
 
     return {
