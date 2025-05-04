@@ -1,0 +1,39 @@
+version: '3.9'
+services:
+  client:
+    container_name: nt_exam_client
+    build: ./client
+    image: nt-exam-frontend
+    ports:
+      - 80:80
+  
+  server:
+    container_name: nt_exam_server
+    build: ./server
+    image: nt-exam-backend
+    ports:
+      - 8000:8000
+
+    depends_on:
+      database:
+        condition: service_healthy
+        restart: true
+
+  database:
+    container_name: nt_db
+    image: postgres:14-alpine3.21
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d nt_exam_db" ]
+      interval: 7s
+      timeout: 3s
+      retries: 7
+    ports:
+      - "5432:5432"
+
+    restart: unless-stopped

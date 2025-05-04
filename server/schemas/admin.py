@@ -1,16 +1,16 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import timedelta
 
 
 class AdminRegisterSchema(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     password: str
 
 
 class AdminLoginSchema(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     password: str
 
 
