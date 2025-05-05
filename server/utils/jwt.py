@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends
 from fastapi import HTTPException
-from db.db_models import Admin
+from db.db_models import Admin, Session
 
 
 security = HTTPBearer()
@@ -61,3 +61,14 @@ async def admin_creation_allowed(credentials: HTTPAuthorizationCredentials = Dep
 
     except Exception as e:
         raise HTTPException(status_code=401, detail=f"Token verification failed: {str(e)}")
+
+
+async def get_active_student(current_user: dict = Depends(get_current_user)):
+    session = await Session.get_or_none(id=current_user["session_id"])
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    if session.finished:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    return current_user
