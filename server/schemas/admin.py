@@ -26,4 +26,8 @@ class CreateSessionSchema(BaseModel):
     questions: QuestionCounts
 
 
-
+class ChangePasswordSchema(BaseModel):
+    name: str
+    email: EmailStr
+    old_password: str
+    new_password: str

@@ -1,13 +1,14 @@
 import os
 
 import argon2.exceptions
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from argon2 import PasswordHasher
 import datetime
 
-from schemas.admin import AdminLoginSchema, CreateSessionSchema, AdminRegisterSchema
+from schemas.admin import AdminRegisterSchema, AdminLoginSchema, CreateSessionSchema, ChangePasswordSchema
 from db.db_models import Admin, Session, Result
 from utils.jwt import create_access_token, get_current_user, admin_creation_allowed
+from utils.exp_check import check_session_expire
 
 router = APIRouter()
 ph = PasswordHasher()
@@ -49,15 +50,37 @@ async def login(cred: AdminLoginSchema):
         raise HTTPException(status_code=401, detail="Invalid user or password")
 
 
+@router.patch("/change-password", status_code=202)
+async def change_password(body: ChangePasswordSchema, current_user: dict = Depends(get_current_user)):
+    admin = await Admin.get_or_none(email=body.email, name=body.name)
+
+    if not admin:
+        raise HTTPException(status_code=404, detail="Invalid user or password")
+
+    if not ph.verify(admin.password, body.old_password):
+        raise HTTPException(status_code=404, detail="Invalid user or password")
+
+    if len(body.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password is too short")
+
+    admin.password = ph.hash(body.new_password)
+    await admin.save()
+
+    return {
+        "status": "Updated"
+    }
+
+
 @router.post("/create-session", status_code=201)
 async def create_session(
         session_parameters: CreateSessionSchema,
+        background_tasks: BackgroundTasks,
         current_user: dict = Depends(get_current_user)):
 
     if current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Permission denied")
 
-    await Session.create(
+    session = await Session.create(
         date_started=datetime.datetime.now(),
         duration=session_parameters.test_duration,
         test_duration=session_parameters.test_duration,
@@ -65,6 +88,8 @@ async def create_session(
         max_score=10,
         finished=False
     )
+
+    background_tasks.add_task(check_session_expire, session.id, session.date_started+session.duration)
 
 
 @router.get("/get-sessions")

@@ -37,8 +37,8 @@ class Session(Model):
 
 class Question(Model):
     id = fields.IntField(primary_key=True)
-    session_id = fields.ForeignKeyField("models.Session")
-    student_id = fields.ForeignKeyField("models.Student")
+    session = fields.ForeignKeyField("models.Session")
+    student = fields.ForeignKeyField("models.Student")
     type = fields.CharField(max_length=256)
     question = fields.JSONField()
 

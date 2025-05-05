@@ -1,11 +1,12 @@
 import os
+import json
 
 from fastapi import APIRouter, HTTPException, Depends
 
 from utils.questions_generator import QuestionGenerator
-from utils.jwt import create_access_token, get_current_user
+from utils.jwt import create_access_token, get_active_student
 from db.db_models import Student, Question, Session
-from schemas.student import StudentRegisterSchema
+from schemas.student import StudentRegisterSchema, TestGenerationSchema
 
 router = APIRouter()
 
@@ -41,14 +42,25 @@ async def register_student(cred: StudentRegisterSchema):
 
 @router.get("/get-questions")
 async def get_questions(
-        current_user: dict = Depends(get_current_user)):
+        current_user: dict = Depends(get_active_student)):
     questions = await Question.filter(student_id=current_user["id"])
     if not questions:
         raise HTTPException(status_code=401, detail="Questions not found")
 
     return questions
 
-# TODO: Сделать запись вопросов в базу данных
+
 @router.post("/generate-questions")
-async def generate_questions():
-    pass
+async def generate_questions(tasks: TestGenerationSchema, current_user: dict = Depends(get_active_student)):
+    questions = QuestionGenerator.generate_questions(tasks.dict())
+
+    session = await Session.get(id=current_user["session_id"])
+    student = await Student.get(id=current_user["id"])
+
+    for question in questions:
+        await Question.create(
+            session=session,
+            student=student,
+            type=question["type"],
+            question=json.dumps(question),
+        )
