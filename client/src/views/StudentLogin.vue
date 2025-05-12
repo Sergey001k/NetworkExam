@@ -14,6 +14,10 @@
                 <label class="block mb-1">Фамилия</label>
                 <input v-model="lastName" type="text" class="w-full border px-3 py-2 rounded" required />
             </div>
+            <div class="mb-4">
+                <label class="block mb-1">Отчество</label>
+                <input v-model="patronymic" type="text" class="w-full border px-3 py-2 rounded" required />
+            </div>
             <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Войти</button>
         </form>
     </div>

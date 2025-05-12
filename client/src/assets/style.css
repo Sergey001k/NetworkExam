@@ -40,6 +40,7 @@ input {
   border-radius: 0.5rem;
   transition: border-color 0.3s ease;
   outline: none !important;
+  font-size: 16px;
 }
 
 input:focus {
@@ -82,4 +83,14 @@ button:active {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+}
+
+.account {
+  text-align: center;
+  margin-top: 20px;
+}
+
+a {
+  text-decoration: none;
+  color: green !important;
 }
