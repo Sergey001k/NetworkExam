@@ -15,3 +15,8 @@ class TestGenerationSchema(BaseModel):
     mask_count: int
     mask_range: int
     host_addr: int
+
+
+class SendAnswerSchema(BaseModel):
+    question_id: int
+    answer: str | dict

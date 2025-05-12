@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from utils.questions_generator import QuestionGenerator
 from utils.jwt import create_access_token, get_active_student
 from db.db_models import Student, Question, Session
-from schemas.student import StudentRegisterSchema, TestGenerationSchema
+from schemas.student import StudentRegisterSchema, TestGenerationSchema, SendAnswerSchema
 
 router = APIRouter()
 
@@ -64,3 +64,23 @@ async def generate_questions(tasks: TestGenerationSchema, current_user: dict = D
             type=question["type"],
             question=json.dumps(question),
         )
+
+
+@router.patch("/send-answer", status_code=202)
+async def send_answer(
+        body: SendAnswerSchema,
+        current_user: dict = Depends(get_active_student)):
+
+    student = await Student.get_or_none(id=current_user['id'])
+    question = await Question.get_or_none(
+        id=body.question_id)
+
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    if not question:
+        raise HTTPException(status_code=404, detail="Question not found")
+
+    question.question["answer"] = body.answer
+
+    await question.save()

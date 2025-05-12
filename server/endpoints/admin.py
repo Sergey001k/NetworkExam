@@ -2,6 +2,7 @@ import os
 
 import argon2.exceptions
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
+from fastapi.responses import StreamingResponse
 from argon2 import PasswordHasher
 import datetime
 
@@ -9,6 +10,7 @@ from schemas.admin import AdminRegisterSchema, AdminLoginSchema, CreateSessionSc
 from db.db_models import Admin, Session, Result
 from utils.jwt import create_access_token, get_current_user, admin_creation_allowed
 from utils.exp_check import check_session_expire
+from utils.excel_export import export_results
 
 router = APIRouter()
 ph = PasswordHasher()
@@ -116,3 +118,21 @@ async def get_session_results(
 
     results = await Result.filter(session_id=session_id)
     return results
+
+
+@router.get("/export-results/{session_id}")
+async def export_results_xls(session_id):
+    session = await Session.get_or_none(id=session_id)
+
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    results = await Result.filter(session=session)
+
+    buffer, filename = await export_results(list(results), session_date=session.date_started)
+
+    return StreamingResponse(
+        buffer,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename="+filename}
+    )

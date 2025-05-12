@@ -48,7 +48,7 @@ class Question(Model):
 
 class Result(Model):
     id = fields.IntField(primary_key=True)
-    session_id = fields.ForeignKeyField("models.Session")
+    session = fields.ForeignKeyField("models.Session")
     student_name = fields.CharField(max_length=256)
     group = fields.CharField(max_length=64)
     score = fields.IntField()
