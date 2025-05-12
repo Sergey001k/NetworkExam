@@ -14,6 +14,13 @@ services:
     ports:
       - 8000:8000
 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
     depends_on:
       database:
         condition: service_healthy
@@ -24,15 +31,18 @@ services:
     image: postgres:14-alpine3.21
     env_file:
       - .env
+    
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${DATABASE_NAME}
+    
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -d nt_exam_db" ]
-      interval: 7s
+      interval: 30s
       timeout: 3s
       retries: 7
+    
     ports:
       - "5432:5432"
 

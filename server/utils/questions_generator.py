@@ -1,6 +1,5 @@
 import random
 import ipaddress
-from pprint import pprint
 
 
 class QuestionGenerator:
@@ -39,7 +38,8 @@ class QuestionGenerator:
         return {
             "type": "network_address",
             "question": addr,
-            "corr_answer": str(ipaddress.IPv4Network(addr, strict=False).network_address)
+            "corr_answer": str(ipaddress.IPv4Network(addr, strict=False).network_address),
+            "student_answer": None
         }
 
     @staticmethod
@@ -48,7 +48,8 @@ class QuestionGenerator:
         return {
             "type": "network_address",
             "question": addr,
-            "corr_answer": str(ipaddress.IPv4Network(addr, strict=False).broadcast_address)
+            "corr_answer": str(ipaddress.IPv4Network(addr, strict=False).broadcast_address),
+            "student_answer": None
         }
 
     @staticmethod
@@ -62,7 +63,8 @@ class QuestionGenerator:
             "corr_answer": {
                 "first": str(network[0]),
                 "last": str(network[-1])
-            }
+            },
+            "student_answer": None
         }
 
     @staticmethod
@@ -77,8 +79,10 @@ class QuestionGenerator:
         QuestionGenerator.generate_ipv4_address().split("/")[0]
 
         return {
+            "type": "same_network",
             "question": [f"{addr1} {mask}", f"{addr2} {mask}"],
-            "corr_answer": same
+            "corr_answer": same,
+            "student_answer": None
         }
 
     @staticmethod
@@ -87,8 +91,10 @@ class QuestionGenerator:
         network = ipaddress.IPv4Network(f"0.0.0.0/{power}", strict=False)
 
         return {
+            "type": "mask_count",
             "question": 2 ** power,
-            "corr_answer": str(network.netmask)
+            "corr_answer": str(network.netmask),
+            "student_answer": None
         }
 
     @staticmethod
@@ -96,8 +102,10 @@ class QuestionGenerator:
         network = ipaddress.IPv4Network(QuestionGenerator.generate_ipv4_address(['A', 'B', 'C']), strict=False)
 
         return {
+            "type": "mask_range",
             "question": [str(network[0]), str(network[-1])],
-            "corr_answer": str(network.netmask)
+            "corr_answer": str(network.netmask),
+            "student_answer": None
         }
 
     @staticmethod
@@ -107,10 +115,12 @@ class QuestionGenerator:
         address = ipaddress.IPv4Address(address.split("/")[0])
 
         return {
+            "type": "host_addr",
             "question": str(address),
             "corr_answer": not any((address == network.network_address,
                                     address.is_loopback, address.is_multicast,
-                                    address == network.broadcast_address, address.is_reserved))
+                                    address == network.broadcast_address, address.is_reserved)),
+            "student_answer": None
         }
 
     @staticmethod

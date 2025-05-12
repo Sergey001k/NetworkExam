@@ -1,9 +1,9 @@
 import uvicorn
 from fastapi import FastAPI
 
-from routes.adminRouter import router as admin_router
-from routes.studentRouter import router as student_router
-from db.database import init_db
+from endpoints.admin import router as admin_router
+from endpoints.student import router as student_router
+from db.db_connection import init_db
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 
