@@ -33,8 +33,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-import Cookies from 'js-cookie'
 import api from '../api.js'
 
 export default {
@@ -76,7 +74,7 @@ export default {
                 console.log(response);
                 this.successMessage = 'Сессия успешно создана!'
                 this.errorMessage = ''
-            } catch (error) {
+            } catch {
                 this.errorMessage = 'Ошибка при создании сессии'
                 this.successMessage = ''
             }
@@ -147,8 +145,8 @@ form {
 
 hr {
     width: 100%;
-    height: 2px;
-    background-color: #eee;
+    height: 1px;
+    background-color: #e0e0e0;
     border: none;
 }
 </style>

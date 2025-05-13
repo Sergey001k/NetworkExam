@@ -8,19 +8,15 @@
         <table v-else>
             <thead>
                 <tr>
-                    <th>Имя</th>
-                    <th>Фамилия</th>
-                    <th>ID студента</th>
-                    <th>Правильных ответов</th>
+                    <th>ФИО студента</th>
+                    <th>Правильные ответы</th>
                     <th>Всего вопросов</th>
                     <th>Процент</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="res in results" :key="res.student_id">
-                    <td>{{ res.first_name }}</td>
-                    <td>{{ res.last_name }}</td>
-                    <td>{{ res.student_id }}</td>
+                    <td>{{ res.name }}</td>
                     <td>{{ res.correct_answers }}</td>
                     <td>{{ res.total_questions }}</td>
                     <td>{{ percent(res.correct_answers, res.total_questions) }}%</td>
@@ -35,8 +31,7 @@
 </template>
 
 <script>
-import axios from 'axios'
-import Cookies from 'js-cookie'
+import api from '@/api';
 
 export default {
     name: 'SessionResults',
@@ -54,15 +49,8 @@ export default {
     methods: {
         async fetchResults() {
             try {
-                const token = Cookies.get('token')
-                const response = await axios.get(
-                    `http://localhost:8000/admin/get-results/${this.sessionId}`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                )
+                const response = await api.get(`/admin/get-results/${this.sessionId}`, {});
+                console.log(response)
                 this.results = response.data
             } catch (err) {
                 this.error = 'Ошибка загрузки результатов.'
@@ -102,16 +90,7 @@ th {
 
 button {
     margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #0056b3;
+    max-width: 300px;
 }
 
 .error {

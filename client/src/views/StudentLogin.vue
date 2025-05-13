@@ -29,6 +29,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import api from '@/api'
+import { useRouter } from 'vue-router'
+import Cookies from 'js-cookie'
 
 const sessionId = ref('')
 const firstName = ref('')
@@ -36,16 +39,22 @@ const lastName = ref('')
 const patronymic = ref('')
 const group = ref('')
 
+const error = ref('')
+const router = useRouter()
+
 async function handleLogin() {
     error.value = ''
     try {
-        const response = await api.post('/student/login', {
+        const response = await api.post('/student/register', {
             name: [firstName.value, lastName.value, patronymic.value].join(' '),
-            group: group,
-            session_id: sessionId
+            group: group.value,
+            session_id: sessionId.value
         })
 
         console.log(response, response.data);
+        const token = response.data['access-token'];
+        Cookies.set('access-token', token, { expires: 7 }) // сохраняем токен на 7 дней
+        
         router.push('/test') 
     } catch (err) {
         error.value = 'Ошибка входа: ' + (err.response?.data?.message || 'проверьте корректность введенных данных')

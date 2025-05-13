@@ -53,11 +53,10 @@ async function handleLogin() {
             password: password.value,
         })
 
-        console.log(response, response.data);
         const token = response.data['access-token'];
         Cookies.set('access-token', token, { expires: 7 }) // сохраняем токен на 7 дней
         
-        router.push('/admin') // перенаправляем после входа
+        router.push('/admin')
     } catch (err) {
         error.value = 'Ошибка входа: ' + (err.response?.data?.message || 'проверьте логин и пароль')
     }
