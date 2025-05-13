@@ -18,6 +18,10 @@
                 <label class="block mb-1">Отчество</label>
                 <input v-model="patronymic" type="text" class="w-full border px-3 py-2 rounded" required />
             </div>
+            <div class="mb-4">
+                <label class="block mb-1">Группа</label>
+                <input v-model="group" type="text" class="w-full border px-3 py-2 rounded" required />
+            </div>
             <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Войти</button>
         </form>
     </div>
@@ -29,9 +33,22 @@ import { ref } from 'vue'
 const sessionId = ref('')
 const firstName = ref('')
 const lastName = ref('')
+const patronymic = ref('')
+const group = ref('')
 
-const handleLogin = () => {
-    console.log('Студент залогинен:', { sessionId: sessionId.value, firstName: firstName.value, lastName: lastName.value })
-    // Здесь будет логика входа и переход на страницу теста
+async function handleLogin() {
+    error.value = ''
+    try {
+        const response = await api.post('/student/login', {
+            name: [firstName.value, lastName.value, patronymic.value].join(' '),
+            group: group,
+            session_id: sessionId
+        })
+
+        console.log(response, response.data);
+        router.push('/test') 
+    } catch (err) {
+        error.value = 'Ошибка входа: ' + (err.response?.data?.message || 'проверьте корректность введенных данных')
+    }
 }
 </script>
