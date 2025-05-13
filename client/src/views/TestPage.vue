@@ -10,9 +10,10 @@
                 <p>{{ questions[currentQuestion].questionText }}</p>
 
                 <div v-if="questions[currentQuestion].type === 'ip'">
-                    <input v-model="answers[currentQuestion]" type="text"
-                        placeholder="Введите IP-адрес, маску или диапазон"
-                        :class="{ 'invalid': !isValidIp(answers[currentQuestion]) && answers[currentQuestion] !== '' }" />
+                    <input v-model="answers[currentQuestion]" type="text" inputmode="numeric" placeholder="0.0.0.0"
+                        @input="filterIpInput"
+                        :class="{ 'invalid': answers[currentQuestion] && !isValidIp(answers[currentQuestion]) }" />
+                    <small class="hint">Введите IP-адрес или маску</small>
                     <!-- <span v-if="!isValidIp(answers[currentQuestion]) && answers[currentQuestion] !== ''"
                         class="error-message">
                         Введите корректный IP-адрес, маску или диапазон!
@@ -116,8 +117,17 @@ function previousQuestion() {
 
 // Валидация IP-адреса или маски
 function isValidIp(ip) {
-    const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
-    return ipRegex.test(ip) && ip.split('.').every(octet => parseInt(octet) <= 255);
+    const regex = /^(\d{1,3}\.){3}\d{1,3}$/;
+    return regex.test(ip) && ip.split('.').every(octet => {
+        const n = parseInt(octet, 10);
+        return n >= 0 && n <= 255;
+    });
+}
+
+function filterIpInput(event) {
+    const rawValue = event.target.value;
+    const filtered = rawValue.replace(/[^0-9.]/g, '');
+    answers.value[currentQuestion] = filtered;
 }
 
 // Завершение теста
@@ -129,11 +139,13 @@ function submitTest() {
 
 <style scoped>
 .test-page {
+    /* width: 95vw;
+    margin: 2rem auto; */
     background: #fff;
     padding: 2rem;
     border-radius: 1rem;
     width: 100%;
-    max-width: 800px;
+    max-width: 1000px;
     margin: auto;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
