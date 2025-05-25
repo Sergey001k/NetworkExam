@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List, Dict
 
 
 class StudentRegisterSchema(BaseModel):
@@ -15,6 +16,22 @@ class TestGenerationSchema(BaseModel):
     mask_count: int
     mask_range: int
     host_addr: int
+
+
+class SafeQuestionBodyOut(BaseModel):
+    question: str | List | Dict
+    student_answer: str | None
+
+
+class SafeQuestionOut(BaseModel):
+    session_id: int
+    id: int
+    type: str
+    student_id: int
+    question: SafeQuestionBodyOut
+
+    class Config:
+        from_attributes = True
 
 
 class SendAnswerSchema(BaseModel):

@@ -121,7 +121,13 @@ async def get_session_results(
 
 
 @router.get("/export-results/{session_id}")
-async def export_results_xls(session_id):
+async def export_results_xls(
+        session_id,
+        current_user: dict = Depends(get_current_user)):
+
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Permission denied")
+
     session = await Session.get_or_none(id=session_id)
 
     if not session:

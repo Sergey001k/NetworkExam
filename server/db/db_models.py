@@ -14,7 +14,7 @@ class Admin(Model):
 
 class Student(Model):
     id = fields.IntField(primary_key=True)
-    session_id = fields.ForeignKeyField("models.Session")
+    session = fields.ForeignKeyField("models.Session")
     name = fields.CharField(max_length=256)
     group = fields.CharField(max_length=64)
 
@@ -52,6 +52,7 @@ class Result(Model):
     student_name = fields.CharField(max_length=256)
     group = fields.CharField(max_length=64)
     score = fields.IntField()
+    percent = fields.IntField()
 
     class Meta:
         table = "results"

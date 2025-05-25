@@ -46,7 +46,7 @@ class QuestionGenerator:
     def generate_broadcast_task():
         addr = QuestionGenerator.generate_ipv4_address()
         return {
-            "type": "network_address",
+            "type": "broadcast_address",
             "question": addr,
             "corr_answer": str(ipaddress.IPv4Network(addr, strict=False).broadcast_address),
             "student_answer": None
@@ -92,7 +92,7 @@ class QuestionGenerator:
 
         return {
             "type": "mask_count",
-            "question": 2 ** power,
+            "question": str(2 ** power),
             "corr_answer": str(network.netmask),
             "student_answer": None
         }

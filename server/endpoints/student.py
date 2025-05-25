@@ -1,12 +1,13 @@
 import os
 import json
+from typing import List
 
 from fastapi import APIRouter, HTTPException, Depends
 
 from utils.questions_generator import QuestionGenerator
 from utils.jwt import create_access_token, get_active_student
-from db.db_models import Student, Question, Session
-from schemas.student import StudentRegisterSchema, TestGenerationSchema, SendAnswerSchema
+from db.db_models import Student, Question, Session, Result
+from schemas.student import StudentRegisterSchema, SafeQuestionOut, SendAnswerSchema
 
 router = APIRouter()
 
@@ -26,7 +27,7 @@ async def register_student(cred: StudentRegisterSchema):
         student = await Student.create(
             name=cred.name,
             group=cred.group,
-            session_id=session)
+            session=session)
 
     token = create_access_token(data={
         "id": student.id,
@@ -40,47 +41,68 @@ async def register_student(cred: StudentRegisterSchema):
     }
 
 
-@router.get("/get-questions")
+@router.get("/get-questions", response_model=List[SafeQuestionOut])
 async def get_questions(
         current_user: dict = Depends(get_active_student)):
     questions = await Question.filter(student_id=current_user["id"])
-    if not questions:
-        raise HTTPException(status_code=401, detail="Questions not found")
 
-    return questions
-
-
-@router.post("/generate-questions")
-async def generate_questions(tasks: TestGenerationSchema, current_user: dict = Depends(get_active_student)):
-    questions = QuestionGenerator.generate_questions(tasks.dict())
+    if questions:
+        return await Question.filter(student_id=current_user["id"])
 
     session = await Session.get(id=current_user["session_id"])
     student = await Student.get(id=current_user["id"])
 
+    if not session:
+        raise HTTPException(404, detail="Session not found")
+
+    questions = QuestionGenerator.generate_questions(session.questions_types)
+
     for question in questions:
+        q_type = question["type"]
+        question.pop("type", None)
         await Question.create(
             session=session,
             student=student,
-            type=question["type"],
-            question=json.dumps(question),
+            type=q_type,
+            question=json.dumps(question)
         )
+
+    return await Question.filter(student_id=current_user["id"])
 
 
 @router.patch("/send-answer", status_code=202)
 async def send_answer(
-        body: SendAnswerSchema,
+        body: List[SendAnswerSchema],
         current_user: dict = Depends(get_active_student)):
 
-    student = await Student.get_or_none(id=current_user['id'])
-    question = await Question.get_or_none(
-        id=body.question_id)
+    student = await Student.get(id=current_user["id"])
+    session = await Session.get_or_none(id=current_user['session_id'])
 
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
+    if await Result.get_or_none(session=session, student_name=student.name):
+        raise HTTPException(403, detail="Results have already been sent")
 
-    if not question:
-        raise HTTPException(status_code=404, detail="Question not found")
+    score = 0
 
-    question.question["answer"] = body.answer
+    for st_answer in body:
+        question = await Question.get(id=st_answer.question_id, student=student)
+        question.question["student_answer"] = st_answer.answer
 
-    await question.save()
+        if question.question["corr_answer"] == st_answer.answer:
+            score += 1
+
+        await question.save()
+
+    percent = score/session.max_score * 100
+
+    await Result.create(
+        session=session,
+        student_name=student.name,
+        group=student.group,
+        score=score,
+        percent=percent
+    )
+
+    return {
+        "score": score,
+        "percent": percent
+    }
