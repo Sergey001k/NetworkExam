@@ -18,6 +18,10 @@ class QuestionCounts(BaseModel):
     network_address: int
     broadcast_address: int
     first_last_address: int
+    same_network: int
+    mask_count: int
+    mask_range: int
+    host_addr: int
 
 
 class CreateSessionSchema(BaseModel):
@@ -31,3 +35,4 @@ class ChangePasswordSchema(BaseModel):
     email: EmailStr
     old_password: str
     new_password: str
+
