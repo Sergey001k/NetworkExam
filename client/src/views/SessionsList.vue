@@ -118,12 +118,6 @@ td {
 
 .session-id {
     font-weight: bold;
-    /* max-width: 40px;
-    max-height: 40px;
-    padding: 10px;
-    background: #e1eeff;
-    border-radius: 20px;
-    text-align: center; */
 }
 
 tr {
