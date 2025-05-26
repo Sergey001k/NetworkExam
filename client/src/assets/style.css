@@ -94,3 +94,35 @@ a {
   text-decoration: none;
   color: green !important;
 }
+
+.success-message {
+    margin-top: 10px;
+    color: rgb(0, 173, 37);
+    font-size: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background: #f0fff2;
+    text-align: center;
+}
+
+.warning-message {
+    margin-top: 10px;
+    margin-bottom: 0;
+    color: rgb(173, 118, 0);
+    font-size: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background: #fffbf0;
+    text-align: center;
+}
+
+.error-message {
+    margin-top: 10px;
+    margin-bottom: 0;
+    color: rgb(173, 0, 0);
+    font-size: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background: #fff0f0;
+    text-align: center;
+}

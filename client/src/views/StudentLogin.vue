@@ -7,12 +7,12 @@
                 <input v-model="sessionId" type="text" class="w-full border px-3 py-2 rounded" required />
             </div>
             <div class="mb-4">
-                <label class="block mb-1">Имя</label>
-                <input v-model="firstName" type="text" class="w-full border px-3 py-2 rounded" required />
-            </div>
-            <div class="mb-4">
                 <label class="block mb-1">Фамилия</label>
                 <input v-model="lastName" type="text" class="w-full border px-3 py-2 rounded" required />
+            </div>
+            <div class="mb-4">
+                <label class="block mb-1">Имя</label>
+                <input v-model="firstName" type="text" class="w-full border px-3 py-2 rounded" required />
             </div>
             <div class="mb-4">
                 <label class="block mb-1">Отчество</label>
@@ -46,7 +46,7 @@ async function handleLogin() {
     error.value = ''
     try {
         const response = await api.post('/student/register', {
-            name: [firstName.value, lastName.value, patronymic.value].join(' '),
+            name: [lastName.value, firstName.value, patronymic.value].join(' '),
             group: group.value,
             session_id: sessionId.value
         })

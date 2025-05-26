@@ -3,7 +3,7 @@
         <h2>Результаты сессии #{{ sessionId }}</h2>
 
         <div v-if="loading">Загрузка результатов...</div>
-        <div v-else-if="results.length === 0">Нет результатов для этой сессии</div>
+        <div v-else-if="results.length === 0" class="warning-message">Сессия не выбрана или нет результатов для выбранной сессии</div>
 
         <table v-else>
             <thead>
@@ -31,7 +31,7 @@
             <button @click="exportResults()">Экспортировать результаты</button>
         </div>
 
-        <p v-if="error" class="error">{{ error }}</p>
+        <p v-if="error" class="error-message">{{ error }}</p>
     </div>
 </template>
 
@@ -57,7 +57,7 @@ export default {
                 const response = await api.get(`/admin/get-results/${this.sessionId}`, {});
                 this.results = response.data
             } catch (err) {
-                this.error = 'Ошибка загрузки результатов.'
+                this.error = 'Ошибка загрузки результатов'
                 console.error(err)
             } finally {
                 this.loading = false

@@ -42,7 +42,7 @@
             </tbody>
         </table>
 
-        <p v-if="error" class="error">{{ error }}</p>
+        <p v-if="error" class="error-message">{{ error }}</p>
     </div>
 </template>
 
@@ -68,7 +68,7 @@ export default {
                 console.log(response)
                 this.sessions = response.data
             } catch (err) {
-                this.error = 'Не удалось загрузить список сессий.'
+                this.error = 'Не удалось загрузить список сессий'
                 console.error(err)
             } finally {
                 this.loading = false
@@ -147,10 +147,5 @@ ul {
     list-style: none;
     padding: 0;
     margin: 0;
-}
-
-.error {
-    color: red;
-    margin-top: 1rem;
 }
 </style>

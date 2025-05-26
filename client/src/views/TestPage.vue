@@ -218,26 +218,6 @@ input[type="text"] {
     border-color: red;
 }
 
-.error-message {
-    margin-top: 10px;
-    color: rgb(173, 0, 0);
-    font-size: 1rem;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    background: #fff0f0;
-    text-align: center;
-}
-
-.success-message {
-    margin-top: 10px;
-    color: rgb(0, 173, 37);
-    font-size: 1rem;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    background: #f0fff2;
-    text-align: center;
-}
-
 .controls {
     margin-top: 1rem;
     display: flex;

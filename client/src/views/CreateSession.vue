@@ -66,12 +66,11 @@ export default {
     methods: {
         async submitSession() {
             try {
-                const response = await api.post('/admin/create-session', {
+                await api.post('/admin/create-session', {
                     duration: this.duration,
                     test_duration: this.test_duration,
                     questions: this.questions,
                 });
-                console.log(response);
                 this.successMessage = 'Сессия успешно создана!'
                 this.errorMessage = ''
             } catch {
@@ -135,11 +134,6 @@ form {
 
 .success-message {
     color: green;
-    text-align: center;
-}
-
-.error-message {
-    color: red;
     text-align: center;
 }
 
