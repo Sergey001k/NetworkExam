@@ -100,12 +100,12 @@ function formatTime(seconds) {
 const formattedTime = computed(() => formatTime(timeLeft.value));
 const totalQuestions = computed(() => questions.value.length);
 const answeredCount = computed(() => answers.value.filter(a => a && a.trim() !== '').length);
-// const unansweredCount = computed(() => totalQuestions.value - answeredCount.value);
 
 onMounted(async () => {
     error.value = '';
     try {
         const response = await api.get('/student/get-questions');
+        console.log(response)
         questions.value = response.data;
         sessionId.value = response.data[0]?.session_id || null;
         answers.value = questions.value.map(q => q.student_answer || '');

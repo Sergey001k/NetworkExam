@@ -14,7 +14,6 @@
                     <th>Время теста</th>
                     <th>Макс. балл</th>
                     <th>Завершена</th>
-                    <!-- <th>Типы вопросов</th> -->
                     <th></th>
                 </tr>
             </thead>
@@ -28,13 +27,6 @@
                     <td>{{ formatDuration(session.test_duration) }}</td>
                     <td>{{ session.max_score }}</td>
                     <td>{{ session.finished ? 'Да' : 'Нет' }}</td>
-                    <!-- <td>
-                        <ul>
-                            <li v-for="(val, type) in session.questions_types" :key="type">
-                                {{ readableQuestionType(type) }}
-                            </li>
-                        </ul>
-                    </td> -->
                     <td>
                         <button @click="$emit('viewResults', session.id)">Результаты</button>
                     </td>
@@ -79,8 +71,8 @@ export default {
             return date.toLocaleString()
         },
         formatDuration(seconds) {
-            const days = Math.floor(seconds / 86400)
-            return `${days} дн.`
+            const mins = Math.floor(seconds / 60)
+            return `${mins} мин`
         },
         readableQuestionType(key) {
             const map = {

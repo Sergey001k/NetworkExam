@@ -5,12 +5,12 @@
             <div class="session-params">
                 <div class="form-group">
                     <label>Длительность сессии:</label>
-                    <input v-model="duration" placeholder="Пример: P3D" required />
+                    <input v-model="duration" placeholder="Кол-во минут" required />
                 </div>
 
                 <div class="form-group">
                     <label>Длительность теста:</label>
-                    <input v-model="test_duration" placeholder="Пример: P3D" required />
+                    <input v-model="test_duration" placeholder="Кол-во минут" required />
                 </div>
             </div>
 
@@ -33,7 +33,8 @@
 </template>
 
 <script>
-import api from '../api.js'
+import api from '../api.js';
+import { Duration } from 'luxon';
 
 export default {
     name: 'CreateSession',
@@ -67,8 +68,8 @@ export default {
         async submitSession() {
             try {
                 await api.post('/admin/create-session', {
-                    duration: this.duration,
-                    test_duration: this.test_duration,
+                    duration: this.minutesToISODuration(this.duration),
+                    test_duration: this.minutesToISODuration(this.test_duration),
                     questions: this.questions,
                 });
                 this.successMessage = 'Сессия успешно создана!'
@@ -78,6 +79,9 @@ export default {
                 this.successMessage = ''
             }
         },
+        minutesToISODuration(minutes) {
+            return Duration.fromObject({ minutes }).toISO();
+        }
     },
 }
 </script>
